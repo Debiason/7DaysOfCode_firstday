@@ -13,7 +13,7 @@ adicionado mais validações como caracteres minimo e maximo no nome.
 
 ----------------------------------------------------------------------------------------------------------------------------
 Terceiro Dia
-Salvando e buscando os dados na Localstore, melhoramos o visual da tabela
+Salvando e buscando os dados na Localstorage, melhoramos o visual da tabela
 
 ![image](https://github.com/Debiason/7DaysOfCode_firstday/assets/39072269/1602ca2f-1e67-42a3-9533-9511374f993d)
 
