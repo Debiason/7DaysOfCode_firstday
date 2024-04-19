@@ -12,6 +12,7 @@ function logSubmit(event) {
     const logDiv = document.getElementById('log');
     const nome = document.getElementById('name').value
     const data = document.getElementById('data_nascimento').value
+    const id = document.getElementById('id').value
     var spanNome = document.getElementById('msgNome');
     logDiv.innerHTML = '';
 
@@ -22,7 +23,7 @@ function logSubmit(event) {
                 spanNome.innerHTML = '';
             }, 3000);
         } else {
-            salvarDadosFormulario(nome, data);
+            salvarDadosFormulario(nome, data, id);
         }
     } else {
         logDiv.innerHTML = '<span class ="text-danger">Revise os dados digitados</span>'
@@ -46,13 +47,17 @@ document.getElementById('name').addEventListener('input', function () {
     contador.textContent = nome.length + '/120';
 });
 
-function salvarDadosFormulario(nome, data) {
+function salvarDadosFormulario(nome, data, id) {
     const pessoas = JSON.parse(localStorage.getItem('pessoas')) || [];
-    pessoas.push({ nome: nome, data: data });
+    if(id == ''){
+        pessoas.push({ nome: nome, data: data });
+    }else{
+        pessoas[id].nome = nome;
+        pessoas[id].data = data; 
+    }
+    
     localStorage.setItem('pessoas', JSON.stringify(pessoas));
-
     adicionaPessoaTabela(pessoas);
-
 }
 
 function adicionaPessoaTabela(pessoas) {
@@ -63,16 +68,26 @@ function adicionaPessoaTabela(pessoas) {
         <th scope="col">#</th>
         <th scope="col">Nome</th>
         <th scope="col">Data Nascimento</th>
+        <th scope="col">Ação</th>
       </tr>
     </thead>
     <tbody>`;
-    i=0;
+    var i=0;
     pessoas.forEach(function (item) {
         var dataFormatada = formatarData(item.data);
         html += `<tr>
         <th scope="row">${i}</th>
         <td>${item.nome}</td>
-        <td>${item.data}</td>
+        <td>${dataFormatada}</td>
+        <td><button id="edit_${i}" type="button" class="btn btn-primary btn-sm" 
+                style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .4rem; 
+                --bs-btn-font-size: .6rem;"><i class="fas fa-pencil"></i>
+            </button>
+            <button id="del_${i}" type="button" class="btn btn-danger btn-sm" 
+                style="--bs-btn-padding-y: .2rem; --bs-btn-padding-x: .4rem; 
+                --bs-btn-font-size: .6rem;"><i class="fas fa-trash-alt"></i>
+            </button>
+        </td>
       </tr>`;
       i +=1;
     });
@@ -81,12 +96,30 @@ function adicionaPessoaTabela(pessoas) {
     logDiv.innerHTML = html;
     document.getElementById('name').value = '';
     document.getElementById('data_nascimento').value = '';
+    document.getElementById('id').value = '';
     contador.textContent = '0/120';
+
+    pessoas.forEach(function (item, index) {
+        document.getElementById(`edit_${index}`).addEventListener('click', function () {
+            document.getElementById('name').value = item.nome;
+            document.getElementById('data_nascimento').value = item.data;
+            document.getElementById('id').value = index;
+        });
+    });
+
+    pessoas.forEach(function (item, index) {
+        document.getElementById(`del_${index}`).addEventListener('click', function () {
+            const pessoas = JSON.parse(localStorage.getItem('pessoas')) || [];
+            pessoas.splice(index, 1);
+            localStorage.setItem('pessoas', JSON.stringify(pessoas));
+            adicionaPessoaTabela(pessoas);
+        });
+    });
 }
 
 function recuperarDadosFormulario() {
     const pessoas = JSON.parse(localStorage.getItem('pessoas')) || [];
-    adicionaPessoaTabela(pessoas);
+    if (pessoas != []) {
+        adicionaPessoaTabela(pessoas);    
+    }
 }
-
-
